@@ -11,7 +11,7 @@ const CreateQuestionValidation = z.object({
   title: z.string({ required_error: 'Title Required' }),
 });
 
-export async function addTopicQuestion(slug: string, formData: FormData) {
+async function addTopicQuestion(slug: string, formData: FormData) {
   'use server';
   const data = CreateQuestionValidation.parse({
     title: formData.get('title'),
@@ -34,21 +34,15 @@ const AddAnswerValidation = z.object({
   answer: z.string({ required_error: 'Title Required' }),
 });
 
-export async function addAnswerAction(
+async function addAnswerAction(
   topicSlug: string,
   questionId: number,
   formData: FormData
 ) {
   'use server';
-
-  console.log('questionId', questionId);
-  console.log('formData', formData);
-
   const data = AddAnswerValidation.parse({
     answer: formData.get('answer'),
   });
-
-  console.log('data', data);
 
   await db.answer.create({
     data: {
@@ -63,6 +57,8 @@ export async function addAnswerAction(
 
   revalidatePath(`/topic/${topicSlug}`);
 }
+
+export type addAnswerActionType = typeof addAnswerAction;
 
 export default async function TopicPage({
   params,
@@ -92,7 +88,7 @@ export default async function TopicPage({
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1>Topic Slug: {topic.title}</h1>
+      <h1 className="text-xl">Topic Slug: {topic.title}</h1>
 
       <form action={addTopicQuestion.bind(undefined, params.slug)}>
         <input type="text" name="title" />

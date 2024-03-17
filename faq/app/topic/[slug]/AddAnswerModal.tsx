@@ -1,11 +1,11 @@
 'use client';
 import { useState } from 'react';
-import { addAnswerAction } from '@/app/topic/[slug]/page';
+import { addAnswerActionType } from '@/app/topic/[slug]/page';
 
 interface AddAnswerModalProps {
   topicSlug: string;
   questionId: number;
-  addAnswerAction: typeof addAnswerAction;
+  addAnswerAction: addAnswerActionType;
 }
 
 export function AddAnswerModal(props: AddAnswerModalProps) {

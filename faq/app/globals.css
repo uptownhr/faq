@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  font-size: 36px;
+}
+
 input, textarea, button {
   border: 1px dotted black;
 }

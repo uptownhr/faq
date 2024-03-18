@@ -20,15 +20,17 @@ async function createTopicAction(formData: FormData) {
     },
   });
 
-  redirect(`/topic/${topic.slug}`);
+  redirect(`/topic/${topic.id}`);
 }
 
 export default async function New() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <form action={createTopicAction}>
+    <main className="flex min-h-screen flex-col items-center justify-between p-1">
+      <form action={createTopicAction} className="flex flex-col">
         <input type="text" name="title" />
-        <button type="submit">Start new Topic</button>
+        <button className="mt-1" type="submit">
+          Start new Topic
+        </button>
       </form>
     </main>
   );

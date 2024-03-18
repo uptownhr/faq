@@ -1,9 +1,9 @@
 'use client';
 import { useState } from 'react';
-import { addAnswerActionType } from '@/app/topic/[slug]/page';
+import { addAnswerActionType } from '@/app/topic/[id]/page';
 
 interface AddAnswerModalProps {
-  topicSlug: string;
+  topicId: number;
   questionId: number;
   addAnswerAction: addAnswerActionType;
 }
@@ -20,7 +20,7 @@ export function AddAnswerModal(props: AddAnswerModalProps) {
               <form
                 action={props.addAnswerAction.bind(
                   undefined,
-                  props.topicSlug,
+                  props.topicId,
                   props.questionId
                 )}
               >

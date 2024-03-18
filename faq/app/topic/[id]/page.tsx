@@ -1,17 +1,17 @@
 import { db } from '@/db';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { AddAnswerModal } from '@/app/topic/[slug]/AddAnswerModal';
+import { AddAnswerModal } from '@/app/topic/[id]/AddAnswerModal';
 
 interface TopicPageParams {
-  slug: string;
+  id: string;
 }
 
 const CreateQuestionValidation = z.object({
   title: z.string({ required_error: 'Title Required' }),
 });
 
-async function addTopicQuestion(slug: string, formData: FormData) {
+async function addTopicQuestion(id: number, formData: FormData) {
   'use server';
   const data = CreateQuestionValidation.parse({
     title: formData.get('title'),
@@ -22,12 +22,12 @@ async function addTopicQuestion(slug: string, formData: FormData) {
       title: data.title,
       topic: {
         connect: {
-          slug,
+          id,
         },
       },
     },
   });
-  revalidatePath(`/topic/${slug}`);
+  revalidatePath(`/topic/${id}`);
 }
 
 const AddAnswerValidation = z.object({
@@ -35,7 +35,7 @@ const AddAnswerValidation = z.object({
 });
 
 async function addAnswerAction(
-  topicSlug: string,
+  topicId: number,
   questionId: number,
   formData: FormData
 ) {
@@ -55,7 +55,7 @@ async function addAnswerAction(
     },
   });
 
-  revalidatePath(`/topic/${topicSlug}`);
+  revalidatePath(`/topic/${topicId}`);
 }
 
 export type addAnswerActionType = typeof addAnswerAction;
@@ -65,9 +65,10 @@ export default async function TopicPage({
 }: {
   params: TopicPageParams;
 }) {
+  const id = parseInt(params.id);
   const topic = await db.topic.findUnique({
     where: {
-      slug: params.slug,
+      id,
     },
   });
 
@@ -77,7 +78,7 @@ export default async function TopicPage({
     where: {
       topic: {
         is: {
-          slug: params.slug,
+          id,
         },
       },
     },
@@ -87,21 +88,26 @@ export default async function TopicPage({
   });
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1 className="text-xl">Topic Slug: {topic.title}</h1>
+    <main className="flex min-h-screen flex-col items-center justify-start p-1">
+      <h1 className="text-xl mb-4">{topic.title}</h1>
 
-      <form action={addTopicQuestion.bind(undefined, params.slug)}>
-        <input type="text" name="title" />
-        <button type="submit">Add a new Question</button>
+      <form
+        action={addTopicQuestion.bind(undefined, id)}
+        className="flex flex-col"
+      >
+        <input type="text" name="title" placeholder="Can you do x?" />
+        <button type="submit" className="mt-1">
+          Add a new Question
+        </button>
       </form>
 
-      <ul>
+      <ul className="mt-4">
         {questions.map((question) => (
           <li key={question.id}>
             {question.title} - {question.createdAt.toLocaleTimeString()}
             <ul className="ml-4">
               <AddAnswerModal
-                topicSlug={params.slug}
+                topicId={id}
                 questionId={question.id}
                 addAnswerAction={addAnswerAction}
               />

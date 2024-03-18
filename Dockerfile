@@ -31,6 +31,9 @@ COPY faq ./faq
 RUN corepack enable pnpm
 RUN pnpm run generate
 RUN pnpm run build
+RUN ls \
+    && ls faq/dist/standalone \
+    && ls faq/dist/static
 
 
 # Production image, copy all the files and run next
@@ -44,13 +47,13 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
+RUN mkdir dist
+RUN chown nextjs:nodejs dist
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/faq/dist/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/faq/dist/static ./dist/static
+COPY --from=builder --chown=nextjs:nodejs /app/faq/dist/static ./faq/dist/static
 COPY faq/prisma/migrations ./faq/prisma/migrations
 
 USER nextjs

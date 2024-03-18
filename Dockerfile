@@ -49,8 +49,8 @@ RUN chown nextjs:nodejs .next
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/faq/dist/standalone/faq ./
-COPY faq/prisma/migrations ./prisma/migrations
+COPY --from=builder --chown=nextjs:nodejs /app/faq/dist/standalone ./
+COPY faq/prisma/migrations ./faq/prisma/migrations
 
 USER nextjs
 
@@ -62,4 +62,4 @@ ENV HOSTNAME "0.0.0.0"
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output
-CMD ["npx", "--yes", "prisma", "migrate", "deploy", "&&", "node", "faq/server.js"]
+CMD ["sh", "-c", "cd faq && npx --yes prisma migrate deploy && node server.js"]
